@@ -17,7 +17,11 @@ namespace EF6Course.Context.Configurations
 
             builder.Property(c => c.Titre)
                 .IsRequired()
-                .HasColumnType("Binary(64)");
+                .HasMaxLength(128);
+
+            //builder.HasMany(e => e.Inscriptions)
+            //    .WithOne()
+            //    .HasForeignKey("CourId");
         }
     }
 }

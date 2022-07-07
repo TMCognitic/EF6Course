@@ -1,6 +1,7 @@
 ﻿using EF6Course.Context.Configurations;
 using EF6Course.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EF6Course.Context
 {
@@ -31,7 +32,9 @@ namespace EF6Course.Context
         //Configuration de Entity Framework
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MsSqlLocalDb; Initial Catalog=UniversityDb; Integrated Security=True;");            
+            optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MsSqlLocalDb; Initial Catalog=UniversityDb; Integrated Security=True;");
+
+            //optionsBuilder.LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information).EnableSensitiveDataLogging();            
         }
 
         //Configuration des entités (Cour, Etudiant, Section)
@@ -39,7 +42,7 @@ namespace EF6Course.Context
         {
             modelBuilder.ApplyConfiguration(new EtudiantConfiguration());
             modelBuilder.ApplyConfiguration(new CourConfiguration());
-            modelBuilder.ApplyConfiguration(new SectionConfiguration());
+            modelBuilder.ApplyConfiguration(new SectionConfiguration());            
         }
     }
 }

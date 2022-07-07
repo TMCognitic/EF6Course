@@ -35,9 +35,8 @@ namespace EF6Course.Context.Migrations
 
                     b.Property<string>("Titre")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nchar(64)")
-                        .IsFixedLength();
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.HasKey("Id");
 
@@ -53,7 +52,9 @@ namespace EF6Course.Context.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime>("DateInscription")
-                        .HasColumnType("Date");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("Date")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -73,9 +74,37 @@ namespace EF6Course.Context.Migrations
                     b.Property<int>("Resultat")
                         .HasColumnType("int");
 
+                    b.Property<int>("SectionId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("SectionId");
+
                     b.ToTable("Etudiant", (string)null);
+
+                    b.HasCheckConstraint("CK_Etudiant_Resultat", "(Resultat BETWEEN 0 AND 20)");
+                });
+
+            modelBuilder.Entity("EF6Course.Entities.Inscription", b =>
+                {
+                    b.Property<int>("EtudiantId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("EtudiantId", "CourId", "Year");
+
+                    b.HasIndex("CourId");
+
+                    b.ToTable("Inscription", (string)null);
                 });
 
             modelBuilder.Entity("EF6Course.Entities.Section", b =>
@@ -92,6 +121,37 @@ namespace EF6Course.Context.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Section", (string)null);
+                });
+
+            modelBuilder.Entity("EF6Course.Entities.Etudiant", b =>
+                {
+                    b.HasOne("EF6Course.Entities.Section", "Section")
+                        .WithMany("Etudiants")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Section");
+                });
+
+            modelBuilder.Entity("EF6Course.Entities.Inscription", b =>
+                {
+                    b.HasOne("EF6Course.Entities.Cour", null)
+                        .WithMany()
+                        .HasForeignKey("CourId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EF6Course.Entities.Etudiant", null)
+                        .WithMany()
+                        .HasForeignKey("EtudiantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EF6Course.Entities.Section", b =>
+                {
+                    b.Navigation("Etudiants");
                 });
 #pragma warning restore 612, 618
         }
